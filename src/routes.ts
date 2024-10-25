@@ -1,5 +1,5 @@
 import { createRoute } from '@hono/zod-openapi';
-import { ErrorNotFound } from './schemas/error';
+import { ErrorNotFoundSchema } from './schemas/error';
 import { OkSchema } from './schemas/ok';
 import { ParamsSchema } from './schemas/params';
 import {
@@ -45,7 +45,7 @@ export const getOneRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: ErrorNotFound,
+          schema: ErrorNotFoundSchema,
         },
       },
       description: 'Todo not found',
@@ -104,7 +104,7 @@ export const patchRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: ErrorNotFound,
+          schema: ErrorNotFoundSchema,
         },
       },
       description: 'Todo not found',
@@ -131,7 +131,7 @@ export const deleteRoute = createRoute({
     404: {
       content: {
         'application/json': {
-          schema: ErrorNotFound,
+          schema: ErrorNotFoundSchema,
         },
       },
       description: 'Todo not found',

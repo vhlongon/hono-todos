@@ -1,6 +1,6 @@
 import { z } from '@hono/zod-openapi';
 
-export const ErrorNotFound = z.object({
+export const ErrorNotFoundSchema = z.object({
   code: z.number().openapi({
     example: 404,
   }),
@@ -9,7 +9,7 @@ export const ErrorNotFound = z.object({
   }),
 });
 
-export const ErrorBadRequest = z.object({
+export const ErrorBadRequestSchema = z.object({
   code: z.number().openapi({
     example: 400,
   }),
