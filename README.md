@@ -2,10 +2,12 @@
 
 Very simple POC of a rest api using [Hono](https://hono.dev/) with [zod-openapi](https://github.com/honojs/middleware/tree/main/packages/zod-openapi).
 
-_Classic swagger ui_
+## Classic swagger ui
+
 ![alt text](image.png)
 
-_Scalar ui_
+## Scalar ui
+
 ![alt text](image-1.png)
 
 To install dependencies:
