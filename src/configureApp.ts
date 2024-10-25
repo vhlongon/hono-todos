@@ -16,6 +16,7 @@ import {
 } from './routes';
 import type { TodoStore } from './store';
 import type { AppOpenAPI } from './types';
+import { apiReference } from '@scalar/hono-api-reference';
 
 export const configureApp = (app: AppOpenAPI, store: TodoStore) => {
   // The OpenAPI documentation will be available at /doc
@@ -27,6 +28,21 @@ export const configureApp = (app: AppOpenAPI, store: TodoStore) => {
       description: 'A simple API to manage todos using Hono and Zod',
     },
   });
+
+  app.get(
+    '/reference',
+    apiReference({
+      theme: 'solarized',
+      layout: 'classic',
+      defaultHttpClient: {
+        targetKey: 'javascript',
+        clientKey: 'fetch',
+      },
+      spec: {
+        url: '/doc',
+      },
+    })
+  );
 
   app.get('/swagger', swaggerUI({ url: '/doc' }));
 
