@@ -14,8 +14,8 @@ export const TodoSchema = z
   })
   .openapi('Todo');
 
-export const TodoWithIdSchema = TodoSchema.omit({ id: true });
+export const TodoWithoutIdSchema = TodoSchema.omit({ id: true });
 
-export const PartialTodoSchema = TodoWithIdSchema.partial();
+export const PartialTodoSchema = TodoWithoutIdSchema.partial();
 
 export const TodosSchema = z.array(TodoSchema).openapi('Todos');

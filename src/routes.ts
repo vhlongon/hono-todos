@@ -5,7 +5,7 @@ import { ParamsSchema } from './schemas/params';
 import {
   PartialTodoSchema,
   TodoSchema,
-  TodoWithIdSchema,
+  TodoWithoutIdSchema,
   TodosSchema,
 } from './schemas/todo';
 
@@ -61,7 +61,7 @@ export const addRoute = createRoute({
     body: {
       content: {
         'application/json': {
-          schema: TodoWithIdSchema,
+          schema: TodoWithoutIdSchema,
         },
       },
     },

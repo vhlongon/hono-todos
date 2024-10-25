@@ -5,12 +5,12 @@ import type {
   z,
 } from '@hono/zod-openapi';
 import type { Env } from 'hono';
-import type { TodoSchema, TodoWithIdSchema } from './schemas/todo';
+import type { TodoSchema, TodoWithoutIdSchema } from './schemas/todo';
 import type { TodoStore } from './store';
 
 export type Todo = z.infer<typeof TodoSchema>;
 
-export type TodoWithoutId = z.infer<typeof TodoWithIdSchema>;
+export type TodoWithoutId = z.infer<typeof TodoWithoutIdSchema>;
 
 export type AppBindings = Env;
 
