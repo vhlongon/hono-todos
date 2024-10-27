@@ -14,12 +14,11 @@ import {
   listRoute,
   patchRoute,
 } from './routes';
-import type { TodoStore } from './store';
 import type { AppOpenAPI } from './types';
 import { apiReference } from '@scalar/hono-api-reference';
 
-export const configureApp = (app: AppOpenAPI, store: TodoStore) => {
-  // The OpenAPI documentation will be available at /doc
+export const configureApp = (app: AppOpenAPI) => {
+  // The OpenAPI raw json will be available at /doc
   app.doc('/doc', {
     openapi: '3.0.0',
     info: {
@@ -29,6 +28,7 @@ export const configureApp = (app: AppOpenAPI, store: TodoStore) => {
     },
   });
 
+  // the scalar ui api reference will be available at /reference
   app.get(
     '/reference',
     apiReference({
@@ -44,13 +44,14 @@ export const configureApp = (app: AppOpenAPI, store: TodoStore) => {
     })
   );
 
+  // The Swagger UI will be available at /swagger
   app.get('/swagger', swaggerUI({ url: '/doc' }));
 
-  app.openapi(listRoute, listHandler(store));
-  app.openapi(getOneRoute, getOneHandler(store));
-  app.openapi(addRoute, addHandler(store));
-  app.openapi(deleteRoute, deleteHandler(store));
-  app.openapi(patchRoute, patchHandler(store));
+  app.openapi(listRoute, listHandler);
+  app.openapi(getOneRoute, getOneHandler);
+  app.openapi(addRoute, addHandler);
+  app.openapi(deleteRoute, deleteHandler);
+  app.openapi(patchRoute, patchHandler);
 
   return app;
 };

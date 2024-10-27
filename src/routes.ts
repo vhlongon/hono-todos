@@ -2,12 +2,12 @@ import { createRoute } from '@hono/zod-openapi';
 import { ErrorNotFoundSchema } from './schemas/error';
 import { OkSchema } from './schemas/ok';
 import { ParamsSchema } from './schemas/params';
-import {
-  PartialTodoSchema,
-  TodoSchema,
-  TodoWithoutIdSchema,
-  TodosSchema,
-} from './schemas/todo';
+import { insertTodoSchema, todoSchema, todosSchema } from './db/schema';
+import * as HttpStatusCodes from 'stoker/http-status-codes';
+import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
+
+const Todo = todoSchema.openapi('Todo');
+const Todos = todosSchema.openapi('Todos');
 
 export const listRoute = createRoute({
   method: 'get',
@@ -15,14 +15,7 @@ export const listRoute = createRoute({
   tags: ['Get all todos'],
   request: {},
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: TodosSchema,
-        },
-      },
-      description: 'Retrieve all todos',
-    },
+    [HttpStatusCodes.OK]: jsonContent(Todos, 'Retrieve all todos'),
   },
 });
 
@@ -34,22 +27,11 @@ export const getOneRoute = createRoute({
     params: ParamsSchema,
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: TodoSchema,
-        },
-      },
-      description: 'Retrieve the todo',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: ErrorNotFoundSchema,
-        },
-      },
-      description: 'Todo not found',
-    },
+    [HttpStatusCodes.OK]: jsonContent(Todo, 'Retrieve the todo'),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      ErrorNotFoundSchema,
+      'Todo not found'
+    ),
   },
 });
 
@@ -58,23 +40,10 @@ export const addRoute = createRoute({
   path: '/add',
   tags: ['Add a new todo'],
   request: {
-    body: {
-      content: {
-        'application/json': {
-          schema: TodoWithoutIdSchema,
-        },
-      },
-    },
+    body: jsonContentRequired(insertTodoSchema, 'The todo to add'),
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: TodoSchema,
-        },
-      },
-      description: 'Add a new todo',
-    },
+    [HttpStatusCodes.OK]: jsonContent(Todo, 'The added todo'),
   },
 });
 
@@ -84,31 +53,14 @@ export const patchRoute = createRoute({
   tags: ['Update a todo by id'],
   request: {
     params: ParamsSchema,
-    body: {
-      content: {
-        'application/json': {
-          schema: PartialTodoSchema,
-        },
-      },
-    },
+    body: jsonContentRequired(insertTodoSchema, 'The todo to update'),
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: TodoSchema,
-        },
-      },
-      description: 'Update the todo',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: ErrorNotFoundSchema,
-        },
-      },
-      description: 'Todo not found',
-    },
+    [HttpStatusCodes.OK]: jsonContent(Todo, 'The updated todo'),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      ErrorNotFoundSchema,
+      'Todo not found'
+    ),
   },
 });
 
@@ -120,22 +72,11 @@ export const deleteRoute = createRoute({
     params: ParamsSchema,
   },
   responses: {
-    200: {
-      content: {
-        'application/json': {
-          schema: OkSchema,
-        },
-      },
-      description: 'Delete the todo',
-    },
-    404: {
-      content: {
-        'application/json': {
-          schema: ErrorNotFoundSchema,
-        },
-      },
-      description: 'Todo not found',
-    },
+    [HttpStatusCodes.OK]: jsonContent(OkSchema, 'The todo was deleted'),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(
+      ErrorNotFoundSchema,
+      'Todo not found'
+    ),
   },
 });
 

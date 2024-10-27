@@ -1,4 +1,5 @@
-import type { AppRouteHandler } from './types';
+import { db } from './db/db';
+import { addTodo, deleteTodo, getTodoById, updateTodo } from './db/utils';
 import type {
   AddRoute,
   GetOneRoute,
@@ -6,14 +7,16 @@ import type {
   PatchRoute,
   RemoveRoute,
 } from './routes';
+import type { AppRouteHandler } from './types';
 
-export const listHandler: AppRouteHandler<ListRoute> = store => c => {
-  return c.json(store.getAll(), 200);
+export const listHandler: AppRouteHandler<ListRoute> = async c => {
+  const todos = await db.query.todos.findMany();
+  return c.json(todos, 200);
 };
 
-export const getOneHandler: AppRouteHandler<GetOneRoute> = store => c => {
+export const getOneHandler: AppRouteHandler<GetOneRoute> = async c => {
   const { id } = c.req.valid('param');
-  const todo = store.getById(Number(id));
+  const todo = await getTodoById(Number(id));
 
   if (!todo) {
     return c.json(
@@ -28,16 +31,18 @@ export const getOneHandler: AppRouteHandler<GetOneRoute> = store => c => {
   return c.json(todo, 200);
 };
 
-export const addHandler: AppRouteHandler<AddRoute> = store => c => {
+export const addHandler: AppRouteHandler<AddRoute> = async c => {
   const input = c.req.valid('json');
-  const todo = store.create(input);
-  return c.json(todo, 200);
+  const newTodo = await addTodo(input);
+  return c.json(newTodo, 200);
 };
 
-export const deleteHandler: AppRouteHandler<RemoveRoute> = store => c => {
+export const deleteHandler: AppRouteHandler<RemoveRoute> = async c => {
   const { id } = c.req.valid('param');
 
-  if (!store.exists(Number(id))) {
+  const todo = await getTodoById(Number(id));
+
+  if (!todo) {
     return c.json(
       {
         code: 404,
@@ -46,15 +51,15 @@ export const deleteHandler: AppRouteHandler<RemoveRoute> = store => c => {
       404
     );
   }
-  store.delete(Number(id));
+  await deleteTodo(Number(id));
 
   return c.json({ ok: true }, 200);
 };
 
-export const patchHandler: AppRouteHandler<PatchRoute> = store => c => {
+export const patchHandler: AppRouteHandler<PatchRoute> = async c => {
   const { id } = c.req.valid('param');
   const input = c.req.valid('json');
-  const todo = store.update(Number(id), input);
+  const todo = await getTodoById(Number(id));
 
   if (!todo) {
     return c.json(
@@ -65,6 +70,8 @@ export const patchHandler: AppRouteHandler<PatchRoute> = store => c => {
       404
     );
   }
+
+  await updateTodo(Number(id), input);
 
   return c.json(todo, 200);
 };
