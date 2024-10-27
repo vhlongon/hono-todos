@@ -1,5 +1,5 @@
 import { createRoute } from '@hono/zod-openapi';
-import { ErrorNotFoundSchema } from './schemas/error';
+import { DbErrorSchema, ErrorNotFoundSchema } from './schemas/error';
 import { OkSchema } from './schemas/ok';
 import { ParamsSchema } from './schemas/params';
 import { insertTodoSchema, todoSchema, todosSchema } from './db/schema';
@@ -8,6 +8,8 @@ import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
 
 const Todo = todoSchema.openapi('Todo');
 const Todos = todosSchema.openapi('Todos');
+const DbError = DbErrorSchema.openapi('DataBaseError');
+const OkResponse = OkSchema.openapi('OkResponse');
 
 export const listRoute = createRoute({
   method: 'get',
@@ -16,6 +18,10 @@ export const listRoute = createRoute({
   request: {},
   responses: {
     [HttpStatusCodes.OK]: jsonContent(Todos, 'Retrieve all todos'),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      DbError,
+      'Database error'
+    ),
   },
 });
 
@@ -32,6 +38,10 @@ export const getOneRoute = createRoute({
       ErrorNotFoundSchema,
       'Todo not found'
     ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      DbError,
+      'Database error'
+    ),
   },
 });
 
@@ -44,6 +54,10 @@ export const addRoute = createRoute({
   },
   responses: {
     [HttpStatusCodes.OK]: jsonContent(Todo, 'The added todo'),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      DbError,
+      'Database error'
+    ),
   },
 });
 
@@ -61,6 +75,10 @@ export const patchRoute = createRoute({
       ErrorNotFoundSchema,
       'Todo not found'
     ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      DbError,
+      'Database error'
+    ),
   },
 });
 
@@ -72,10 +90,14 @@ export const deleteRoute = createRoute({
     params: ParamsSchema,
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(OkSchema, 'The todo was deleted'),
+    [HttpStatusCodes.OK]: jsonContent(OkResponse, 'The todo was deleted'),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       ErrorNotFoundSchema,
       'Todo not found'
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      DbError,
+      'Database error'
     ),
   },
 });
