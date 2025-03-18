@@ -5,4 +5,7 @@ const app = createApp();
 
 configureApp(app);
 
-export default app;
+export default {
+  port: process.env.PORT || 3000,
+  fetch: app.fetch,
+};
