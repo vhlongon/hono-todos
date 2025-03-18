@@ -2,14 +2,9 @@ import { createRoute } from '@hono/zod-openapi';
 import { DbErrorSchema, ErrorNotFoundSchema } from './schemas/error';
 import { OkSchema } from './schemas/ok';
 import { ParamsSchema } from './schemas/params';
-import { insertTodoSchema, todoSchema, todosSchema } from './db/schema';
+import { InsertSchema, TodoSchema, TodosSchema } from './db/schema';
 import * as HttpStatusCodes from 'stoker/http-status-codes';
 import { jsonContent, jsonContentRequired } from 'stoker/openapi/helpers';
-
-const Todo = todoSchema.openapi('Todo');
-const Todos = todosSchema.openapi('Todos');
-const DbError = DbErrorSchema.openapi('DataBaseError');
-const OkResponse = OkSchema.openapi('OkResponse');
 
 export const listRoute = createRoute({
   method: 'get',
@@ -17,9 +12,9 @@ export const listRoute = createRoute({
   tags: ['Get all todos'],
   request: {},
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(Todos, 'Retrieve all todos'),
+    [HttpStatusCodes.OK]: jsonContent(TodosSchema, 'Retrieve all todos'),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      DbError,
+      DbErrorSchema,
       'Database error'
     ),
   },
@@ -33,13 +28,13 @@ export const getOneRoute = createRoute({
     params: ParamsSchema,
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(Todo, 'Retrieve the todo'),
+    [HttpStatusCodes.OK]: jsonContent(TodoSchema, 'Retrieve the todo'),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       ErrorNotFoundSchema,
       'Todo not found'
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      DbError,
+      DbErrorSchema,
       'Database error'
     ),
   },
@@ -50,12 +45,12 @@ export const addRoute = createRoute({
   path: '/add',
   tags: ['Add a new todo'],
   request: {
-    body: jsonContentRequired(insertTodoSchema, 'The todo to add'),
+    body: jsonContentRequired(InsertSchema, 'The todo to add'),
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(Todo, 'The added todo'),
+    [HttpStatusCodes.OK]: jsonContent(TodoSchema, 'The added todo'),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      DbError,
+      DbErrorSchema,
       'Database error'
     ),
   },
@@ -67,16 +62,16 @@ export const patchRoute = createRoute({
   tags: ['Update a todo by id'],
   request: {
     params: ParamsSchema,
-    body: jsonContentRequired(insertTodoSchema, 'The todo to update'),
+    body: jsonContentRequired(InsertSchema, 'The todo to update'),
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(Todo, 'The updated todo'),
+    [HttpStatusCodes.OK]: jsonContent(TodoSchema, 'The updated todo'),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       ErrorNotFoundSchema,
       'Todo not found'
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      DbError,
+      DbErrorSchema,
       'Database error'
     ),
   },
@@ -90,13 +85,13 @@ export const deleteRoute = createRoute({
     params: ParamsSchema,
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(OkResponse, 'The todo was deleted'),
+    [HttpStatusCodes.OK]: jsonContent(OkSchema, 'The todo was deleted'),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(
       ErrorNotFoundSchema,
       'Todo not found'
     ),
     [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
-      DbError,
+      DbErrorSchema,
       'Database error'
     ),
   },
